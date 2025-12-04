@@ -1,0 +1,26 @@
+html {
+  font-size: 62.5%;
+}
+
+html body #root .App {
+  min-height: 100vh;
+}
+
+.epic-list {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  scrollbar-width: none; /* firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.acea-row {
+  display: flex;
+
+  &.row-center {
+    align-items: center;
+    justify-content: center;
+  }
+}
