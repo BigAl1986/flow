@@ -56,7 +56,7 @@ export interface Epic {
 }
 
 export interface Flow {
-  id: number;
+  id: string;
   name: string;
   personId: number;
   organization: string;

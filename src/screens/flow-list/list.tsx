@@ -1,11 +1,15 @@
-import { Button, Modal, Table, TableProps } from "antd";
+import { Button, Input, Modal, Table, TableProps } from "antd";
+import { CheckOutlined } from '@ant-design/icons';
+import { UserSelect } from "components/user-select";
 import dayjs from "dayjs";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Flow, User } from "types";
 
 interface ListProps extends TableProps<Flow> {
   users: User[];
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
+  onSave: (flow: Flow) => void;
   refresh?: () => void;
 }
 
@@ -21,6 +25,14 @@ export const List = ({ users, refresh, ...props }: ListProps) => {
     });
   };
 
+  const [addingRow, setAddingRow] = useState<Flow>({
+    id: 'new',
+    name: '',
+    personId: 1,
+    organization: '',
+    created: -1,
+  });
+
   return (
     <Table
       rowKey="id"
@@ -30,13 +42,33 @@ export const List = ({ users, refresh, ...props }: ListProps) => {
           title: "流程名",
           sorter: (pre, next) => pre.name.localeCompare(next.name),
           render(value, record) {
-            return <Link to={`/comfy/${String(record.id)}`}>{record.name}</Link>;
+            return record.id === 'new' ?
+            <Input
+              allowClear
+              value={addingRow.name}
+              onChange={e => setAddingRow({
+                ...addingRow,
+                name: e.target.value,
+              })}
+            /> :
+            <Link to={`/comfy/${String(record.id)}`}>{record.name}</Link>;
           },
         },
         {
           title: "负责人",
           render(value, record) {
             return (
+              record.id === 'new' ?
+              <UserSelect
+                defaultOptionName="负责人"
+                value={addingRow.personId}
+                onChange={(e) =>
+                  setAddingRow({
+                    ...addingRow,
+                    personId: e || 1,
+                  })
+                }
+              /> :
               <span>
                 {users.find((user) => user.id === record.personId)?.name ||
                   "unknown"}
@@ -47,6 +79,20 @@ export const List = ({ users, refresh, ...props }: ListProps) => {
         {
           title: "部门",
           dataIndex: "organization",
+          render(value, record) {
+            return (
+              record.id === 'new' ?
+              <Input
+                allowClear
+                value={addingRow.organization}
+                onChange={e => setAddingRow({
+                  ...addingRow,
+                  organization: e.target.value,
+                })}
+              /> :
+              <span>{record.organization}</span>
+            );
+          }
         },
         {
           title: "创建时间",
@@ -64,6 +110,17 @@ export const List = ({ users, refresh, ...props }: ListProps) => {
         {
           render(value, record) {
             return (
+              record.id === 'new' ?
+              <Button
+                type="link"
+                icon={<CheckOutlined />}
+                onClick={() => props.onSave({
+                  ...addingRow,
+                  id: Math.floor((Math.random() * 1000000)).toString(),
+                  created: new Date().getTime(),
+                })}
+              />
+              :
               <Button
                 danger
                 type="link"

@@ -6,6 +6,7 @@ import { MainContainer, Row } from "components/lib";
 import { useUsers } from "utils/users";
 import { useEffect, useState } from "react";
 import { Flow } from "types";
+import { Button } from "antd";
 
 export const FlowList = () => {
   useDocumentTitle("流程列表", false);
@@ -15,30 +16,48 @@ export const FlowList = () => {
   const debounceParam = useDebounce(param, 200);
   const [list, setList] = useState<Flow[]>([]);
   const [flowList, setFlowList] = useState<Flow[]>([]);
+  const [adding, setAdding] = useState(false);
+
+  const addingRow: Flow = {
+    id: 'new',
+    name: '',
+    personId: 1,
+    organization: '',
+    created: -1,
+  }
 
   const handleParamChange = (param: any) => {
     setParam(param);
   }
 
-  const handleDelete = (id: number) => {
-    console.log('delete', id);
-    
+  const handleDelete = (id: string) => {
+    if (!(list.findIndex(flow => flow.id === id) >= 0)) return;
+    const arr = list.filter(flow => flow.id !== id)
+    setList(arr);
+    localStorage.setItem('flowList', JSON.stringify(arr));
+  }
+
+  const handleSave = (flow: Flow) => {
+    const arr = [flow, ...list];
+    setList(arr);
+    localStorage.setItem('flowList', JSON.stringify(arr));
+    setAdding(false);
   }
 
   useEffect(() => {
     const flowListStorage = localStorage.getItem('flowList');
-    if (flowListStorage && Array.isArray(flowListStorage)) {
-      const arr = JSON.parse(flowListStorage) as Flow[];
+    let arr = JSON.parse(flowListStorage || '[]') as Flow[];
+    if (arr?.length) {
       setList(arr);
     } else {
-      const arr = [ { id: 1, name: 'my flow', personId: 1, organization: '快递组', created: 1678978787989 }];
+      arr = [ { id: '1', name: 'my flow', personId: 1, organization: '快递组', created: 1678978787989 }];
       localStorage.setItem('flowList', JSON.stringify(arr));
       setList(arr);
     }
     const lineListStorage = localStorage.getItem("lineList");
     if (!lineListStorage) {
       localStorage.setItem('lineList', JSON.stringify([{
-        flowId: 1,
+        flowId: '1',
         list: [
           {
             id: "07831680",
@@ -109,7 +128,7 @@ export const FlowList = () => {
     const nodeListStorage = localStorage.getItem("nodeList");
     if (!nodeListStorage) {
       localStorage.setItem('nodeList', JSON.stringify([{
-        flowId: 1,
+        flowId: '1',
         list: [
           {
             id: "start",
@@ -174,18 +193,24 @@ export const FlowList = () => {
   }, []);
 
   useEffect(() => {
-    if (list.length) {
-      setFlowList((debounceParam.personId ? list.filter(flow => flow.personId === debounceParam.personId) : list).filter(flow => flow.name.includes(debounceParam.name || '')));
-    }
+    setFlowList((debounceParam.personId ? list.filter(flow => flow.personId === debounceParam.personId) : list).filter(flow => flow.name.includes(debounceParam.name || '')));
   }, [debounceParam, list]);
 
   return (
     <MainContainer>
       <Row between>
         <h2>流程列表</h2>
+        <Button type="link" onClick={() => setAdding(true)}>
+          创建流程
+        </Button>
       </Row>
       <SearchPanel param={param} setParam={handleParamChange} />
-      <List users={users || []} dataSource={flowList || []} onDelete={handleDelete} />
+      <List
+        users={users || []}
+        dataSource={ adding ? [ addingRow, ...flowList] : flowList || []}
+        onDelete={handleDelete}
+        onSave={handleSave}
+      />
     </MainContainer>
   );
 };

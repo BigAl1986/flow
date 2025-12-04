@@ -10,6 +10,7 @@ import {
   Navigate,
   Route,
   Routes,
+  Link,
 } from "react-router-dom";
 import { Project } from "screens/project";
 import { ProjectPopover } from "components/project-popover";
@@ -58,7 +59,9 @@ const PageHeader = () => {
         <MiddleAlignButton type="link" onClick={toIndex}>
           <SoftwareLogo width="18rem" color="rgb(38, 132, 255)" />
         </MiddleAlignButton>
-        <ProjectPopover />
+        <Link to={'/flows'}>流程</Link>
+        <Link to={'/projects'}>项目</Link>
+        {/* <ProjectPopover /> */}
         <UserPopover />
       </HeaderLeft>
       <HeaderRight>
