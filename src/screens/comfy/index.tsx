@@ -5,7 +5,7 @@ import Diamond from "./libs/Diamond";
 import Triangle from "./libs/Triangle";
 import End from "./libs/End";
 import { useState, MouseEvent, useEffect, useRef } from "react";
-import { FlowNode, NodeType, PortType, Position, SvgLine } from "types";
+import { FlowNode, FlowNodeList, NodeType, PortType, Position, SvgLine, SvgLineList } from "types";
 import MainCanvas from "./components/MainCanvas";
 import { NodeContext } from "context/node-context";
 import {
@@ -20,6 +20,7 @@ import {
 import { genRandomId } from "./libs/utils";
 import { Button } from "antd";
 import { useDebounce } from "../../utils/index";
+import { useLocation } from "react-router-dom";
 
 export default function Comfy() {
   const isInitialRender = useRef(true);
@@ -38,154 +39,44 @@ export default function Comfy() {
     (FlowNode | undefined)[]
   >([]);
 
+  const flowId = useLocation().pathname.split("/").at(-1) || "";
+
   useEffect(() => {
     const lineListStorage = localStorage.getItem("lineList");
-    if (lineListStorage) {
-      const list = JSON.parse(lineListStorage) as SvgLine[];
-      setLineList(list);
-    } else {
-      setLineList([
-        {
-          id: "07831680",
-          sourceNodeId: "start",
-          sourcePortIndex: 0,
-          targetNodeId: "33228236",
-          targetPortIndex: 0,
-          startPos: { x: 106, y: 28 },
-          endPos: { x: 253, y: 234 },
-        },
-        {
-          id: "49097069",
-          sourceNodeId: "33228236",
-          sourcePortIndex: 1,
-          targetNodeId: "27017427",
-          targetPortIndex: 1,
-          startPos: { x: 371, y: 168 },
-          endPos: { x: 627, y: 236 },
-        },
-        {
-          id: "56574285",
-          sourceNodeId: "27017427",
-          sourcePortIndex: 2,
-          targetNodeId: "32619822",
-          targetPortIndex: 0,
-          startPos: { x: 787, y: 233 },
-          endPos: { x: 974, y: 99 },
-        },
-        {
-          id: "58456975",
-          sourceNodeId: "33228236",
-          sourcePortIndex: 2,
-          targetNodeId: "27017427",
-          targetPortIndex: 0,
-          startPos: { x: 371, y: 296 },
-          endPos: { x: 713, y: 150 },
-        },
-        {
-          id: "30722765",
-          sourceNodeId: "27017427",
-          sourcePortIndex: 3,
-          targetNodeId: "04785270",
-          targetPortIndex: 0,
-          startPos: { x: 707, y: 317 },
-          endPos: { x: 927, y: 457 },
-        },
-        {
-          id: "98740711",
-          sourceNodeId: "04785270",
-          sourcePortIndex: 1,
-          targetNodeId: "12971379",
-          targetPortIndex: 0,
-          startPos: { x: 1087, y: 453 },
-          endPos: { x: 1330, y: 538 },
-        },
-        {
-          id: "56059125",
-          sourceNodeId: "32619822",
-          sourcePortIndex: 1,
-          targetNodeId: "70488904",
-          targetPortIndex: 0,
-          startPos: { x: 1128, y: 97 },
-          endPos: { x: 1377, y: 106 },
-        },
-      ]);
-    }
+    const flowLines = JSON.parse(lineListStorage || '[]') as SvgLineList[];
+    const currentFlowLines = flowLines.find(lines => String(lines.flowId) === flowId);
+    setLineList(currentFlowLines?.list || []);
+
     const nodeListStorage = localStorage.getItem("nodeList");
-    if (nodeListStorage) {
-      const list = JSON.parse(nodeListStorage) as FlowNode[];
-      setNodeList(list);
-    } else {
-      setNodeList([
-        {
-          id: "start",
-          type: "start",
-          position: { x: 10, y: 10 },
-          ports: [{ type: "exit", offsetX: 96, offsetY: 18 }],
-        },
-        {
-          id: "33228236",
-          type: "triangle",
-          position: { x: 223, y: 154 },
-          ports: [
-            { type: "entrance", offsetX: 28, offsetY: 78 },
-            { type: "exit", offsetX: 148, offsetY: 14 },
-            { type: "exit", offsetX: 148, offsetY: 142 },
-          ],
-        },
-        {
-          id: "27017427",
-          type: "diamond",
-          position: { x: 609, y: 135 },
-          ports: [
-            { type: "entrance", offsetX: 98, offsetY: 12 },
-            { type: "entrance", offsetX: 18, offsetY: 98 },
-            { type: "exit", offsetX: 178, offsetY: 98 },
-            { type: "exit", offsetX: 98, offsetY: 182 },
-          ],
-        },
-        {
-          id: "32619822",
-          type: "rectangle",
-          position: { x: 952, y: 79 },
-          ports: [
-            { type: "entrance", offsetX: 18, offsetY: 18 },
-            { type: "exit", offsetX: 176, offsetY: 18 },
-          ],
-        },
-        {
-          id: "04785270",
-          type: "rectangle",
-          position: { x: 911, y: 435 },
-          ports: [
-            { type: "entrance", offsetX: 18, offsetY: 18 },
-            { type: "exit", offsetX: 176, offsetY: 18 },
-          ],
-        },
-        {
-          id: "70488904",
-          type: "end",
-          position: { x: 1357, y: 87 },
-          ports: [{ type: "entrance", offsetX: 18, offsetY: 18 }],
-        },
-        {
-          id: "12971379",
-          type: "end",
-          position: { x: 1307, y: 518 },
-          ports: [{ type: "entrance", offsetX: 18, offsetY: 18 }],
-        },
-      ]);
-    }
-  }, []);
+    const flowNodes = JSON.parse(nodeListStorage || '[]') as FlowNodeList[];
+    const currentNodeLines = flowNodes.find(lines => String(lines.flowId) === flowId);
+    setNodeList(currentNodeLines?.list || []);
+  }, [flowId]);
   const debounceLineList = useDebounce(lineList, 1000);
   const debounceNodeList = useDebounce(nodeList, 1000);
   useEffect(() => {
     if (isInitialRender.current) {
       isInitialRender.current = false;
     } else {
-      localStorage.setItem("lineList", JSON.stringify(debounceLineList));
-      localStorage.setItem("nodeList", JSON.stringify(debounceNodeList));
+      const lineListStorage = localStorage.getItem("lineList");
+      const flowLines = JSON.parse(lineListStorage || '[]') as SvgLineList[];
+      flowLines.forEach(lines => {
+        if (String(lines.flowId) === flowId) {
+          lines.list = debounceLineList;
+        }
+      });
+      localStorage.setItem("lineList", JSON.stringify(flowLines));
+
+      const nodeListStorage = localStorage.getItem("nodeList");
+      const flowNodes = JSON.parse(nodeListStorage || '[]') as FlowNodeList[];
+      flowNodes.forEach(nodes => {
+        if (String(nodes.flowId) === flowId) {
+          nodes.list = debounceNodeList;
+        }
+      });
+      localStorage.setItem("nodeList", JSON.stringify(flowNodes));
     }
-  }, [debounceLineList, debounceNodeList]);
+  }, [debounceLineList, debounceNodeList, flowId]);
 
   const onAdd = (type: NodeType) => {
     setNodeList(

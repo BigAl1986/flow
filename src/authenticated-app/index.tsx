@@ -10,13 +10,13 @@ import {
   Navigate,
   Route,
   Routes,
-  Link,
 } from "react-router-dom";
 import { Project } from "screens/project";
 import { ProjectPopover } from "components/project-popover";
 import { ProjectModal } from "components/project-modal";
 import { UserPopover } from "components/user-popover";
 import Comfy from "screens/comfy";
+import { FlowList } from "screens/flow-list";
 
 export const AuthenticatedApp = () => {
   return (
@@ -25,10 +25,11 @@ export const AuthenticatedApp = () => {
         <PageHeader />
         <Main>
           <Routes>
-            <Route path="/comfy" element={<Comfy />} />
+            <Route path="/comfy/:id" element={<Comfy />} />
+            <Route path="/flows" element={<FlowList />} />
             <Route path="/projects" element={<ProjectList />} />
             <Route path="/projects/:id/*" element={<Project />} />
-            <Route index element={<Navigate to={"comfy"} replace={true} />} />
+            <Route index element={<Navigate to={"flows"} replace={true} />} />
           </Routes>
         </Main>
         <ProjectModal />

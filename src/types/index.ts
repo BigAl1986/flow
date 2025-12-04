@@ -55,6 +55,14 @@ export interface Epic {
   end: number;
 }
 
+export interface Flow {
+  id: number;
+  name: string;
+  personId: number;
+  organization: string;
+  created: number;
+}
+
 export interface Position {
   x: number;
   y: number;
@@ -80,6 +88,11 @@ export interface FlowNode {
   type: NodeType;
   position?: Position;
   ports: Port[];
+}
+
+export interface FlowNodeList {
+  flowId: number;
+  list: FlowNode[];
 }
 
 export interface ButtonsBarProps {
@@ -108,6 +121,11 @@ export interface SvgLine {
   targetPortIndex: number;
   startPos: Position;
   endPos: Position;
+}
+
+export interface SvgLineList {
+  flowId: number;
+  list: SvgLine[];
 }
 
 export interface NodeContextType {
