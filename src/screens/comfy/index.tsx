@@ -50,7 +50,14 @@ export default function Comfy() {
     const nodeListStorage = localStorage.getItem("nodeList");
     const flowNodes = JSON.parse(nodeListStorage || '[]') as FlowNodeList[];
     const currentNodeLines = flowNodes.find(lines => String(lines.flowId) === flowId);
-    setNodeList(currentNodeLines?.list || []);
+    setNodeList(currentNodeLines?.list || [
+      {
+        id: "start",
+        type: "start",
+        position: { x: 10, y: 10 },
+        ports: [{ type: "exit", offsetX: 96, offsetY: 18 }],
+      }
+    ]);
   }, [flowId]);
   const debounceLineList = useDebounce(lineList, 1000);
   const debounceNodeList = useDebounce(nodeList, 1000);
