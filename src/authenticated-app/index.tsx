@@ -13,7 +13,6 @@ import {
   Link,
 } from "react-router-dom";
 import { Project } from "screens/project";
-import { ProjectPopover } from "components/project-popover";
 import { ProjectModal } from "components/project-modal";
 import { UserPopover } from "components/user-popover";
 import Comfy from "screens/comfy";
@@ -61,7 +60,6 @@ const PageHeader = () => {
         </MiddleAlignButton>
         <Link to={'/flows'}>流程</Link>
         <Link to={'/projects'}>项目</Link>
-        {/* <ProjectPopover /> */}
         <UserPopover />
       </HeaderLeft>
       <HeaderRight>
