@@ -2,31 +2,19 @@ import styled from "@emotion/styled";
 import { BorderStyle, BoxShadow, useMouseDown } from "./utils";
 import ButtonsBar from "./components/ButtonsBar";
 import { ComfyNodeProps, NodeContextType } from "types";
-import { useContext, useState, MouseEvent, useRef, useEffect } from "react";
+import { useContext, useState, MouseEvent, useRef } from "react";
 import { NodeContext } from "context/node-context";
 import PlayButton from "./components/PlayButton";
 import { rectanglePorts } from ".";
-import { Input, InputRef } from "antd";
+import NodeName from "./components/NodeName";
 
 export default function Rectangle(props: ComfyNodeProps) {
-  const [showLabel, setShowLabel] = useState(props.nodeInfo?.label || '双向节点');
-  const [editing, setEditing] = useState(false);
-  const inputRef = useRef<InputRef>(null);
   const [showButton, setShowButton] = useState(false);
   const boxRef = useRef<HTMLDivElement | null>(null);
   const { left, top } = useMouseDown(boxRef);
-  const { onDragStart, onMouseDown, onRename, canvasOffsetTop } = useContext(
+  const { onDragStart, onMouseDown, canvasOffsetTop } = useContext(
     NodeContext
   ) as NodeContextType;
-
-  useEffect(() => {
-    if (editing) inputRef.current?.focus({ cursor: 'all' });
-  }, [editing]);
-
-  const handleChange = () => {
-    setEditing(false);
-    onRename(props.nodeInfo?.id || '', showLabel);
-  };
 
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -64,18 +52,8 @@ export default function Rectangle(props: ComfyNodeProps) {
       <RectangleMain
         className="node-name acea-row row-center"
         onMouseDown={(e) => handleMouseDown(e)}
-        onClick={() => setEditing(true)}
       >
-        {
-          editing ?
-          <Input
-            ref={inputRef}
-            value={showLabel}
-            onBlur={handleChange}
-            onPressEnter={handleChange}
-            onChange={e => setShowLabel(e.target.value)}
-          /> : <span>{showLabel}</span>
-        }
+        <NodeName nodeInfo={props.nodeInfo} />
       </RectangleMain>
       <RectanglePort className="acea-row row-center">
         <PlayButton
@@ -112,11 +90,4 @@ export const RectangleMain = styled.div`
   border-left: ${BorderStyle};
   border-right: ${BorderStyle};
   cursor: move;
-
-  &:hover {
-    span {
-      transform: scale(1.1);
-      transition: transform .5s ease-in-out;
-    }
-  }
 `;

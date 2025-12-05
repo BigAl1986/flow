@@ -8,22 +8,27 @@ import Start from "./Start";
 export const libs: ComfyNode[] = [
   {
     type: "rectangle",
+    defaultLabel: '双向节点',
     Node: Rectangle,
   },
   {
     type: "diamond",
+    defaultLabel: '交叉节点',
     Node: Diamond,
   },
   {
     type: "triangle",
+    defaultLabel: '分叉节点',
     Node: Triangle,
   },
   {
     type: "end",
+    defaultLabel: '终止节点',
     Node: End,
   },
   {
     type: "start",
+    defaultLabel: '启动节点',
     Node: Start,
   },
 ];

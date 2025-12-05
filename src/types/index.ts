@@ -72,6 +72,7 @@ export type NodeType = "rectangle" | "triangle" | "diamond" | "end" | "start";
 
 export interface ComfyNode {
   type: NodeType;
+  defaultLabel: string;
   Node: FC<ComfyNodeProps>;
 }
 

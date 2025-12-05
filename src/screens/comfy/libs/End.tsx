@@ -1,32 +1,20 @@
 import styled from "@emotion/styled";
 import { BorderStyle, BoxShadow, useMouseDown } from "./utils";
 import { ComfyNodeProps, NodeContextType } from "types";
-import { useContext, useState, MouseEvent, useRef, useEffect } from "react";
+import { useContext, useState, MouseEvent, useRef } from "react";
 import ButtonsBar from "./components/ButtonsBar";
 import { NodeContext } from "context/node-context";
 import PlayButton from "./components/PlayButton";
 import { endPorts } from ".";
-import { Input, InputRef } from "antd";
+import NodeName from "./components/NodeName";
 
 export default function End(props: ComfyNodeProps) {
-  const [showLabel, setShowLabel] = useState(props.nodeInfo?.label || '终止节点');
-  const [editing, setEditing] = useState(false);
-  const inputRef = useRef<InputRef>(null);
   const [showButton, setShowButton] = useState(false);
   const boxRef = useRef<HTMLDivElement | null>(null);
   const { left, top } = useMouseDown(boxRef);
-  const { onMouseDown, onDragStart, onRename, canvasOffsetTop } = useContext(
+  const { onMouseDown, onDragStart, canvasOffsetTop } = useContext(
     NodeContext
   ) as NodeContextType;
-
-  useEffect(() => {
-    if (editing) inputRef.current?.focus({ cursor: 'all' });
-  }, [editing]);
-
-  const handleChange = () => {
-    setEditing(false);
-    onRename(props.nodeInfo?.id || '', showLabel);
-  };
 
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -64,18 +52,8 @@ export default function End(props: ComfyNodeProps) {
       <EndMain
         className="node-name acea-row row-center"
         onMouseDown={(e) => handleMouseDown(e)}
-        onClick={() => setEditing(true)}
       >
-        {
-          editing ?
-          <Input
-            ref={inputRef}
-            value={showLabel}
-            onBlur={handleChange}
-            onPressEnter={handleChange}
-            onChange={e => setShowLabel(e.target.value)}
-          /> : <span>{showLabel}</span>
-        }
+        <NodeName nodeInfo={props.nodeInfo} />
       </EndMain>
     </EndBox>
   );
@@ -104,11 +82,4 @@ export const EndMain = styled.div`
   height: 100%;
   border-left: ${BorderStyle};
   cursor: move;
-
-  &:hover {
-    span {
-      transform: scale(1.1);
-      transition: transform .5s ease-in-out;
-    }
-  }
 `;
