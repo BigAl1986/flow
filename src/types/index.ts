@@ -86,6 +86,7 @@ export interface Port {
 export interface FlowNode {
   id: string;
   type: NodeType;
+  label?: string;
   position?: Position;
   ports: Port[];
 }
@@ -144,6 +145,7 @@ export interface NodeContextType {
     pos2: Position
   ) => void;
   // 点击+、-按钮；
+  onRename: (id: string, name: string) => void;
   onRemove: (id: string) => void;
   onAdd: (type: NodeType) => void;
   // 右侧画布的鼠标事件：主要响应节点移动、曲线重绘的功能；

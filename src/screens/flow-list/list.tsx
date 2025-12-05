@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Flow, User } from "types";
+import { genRandomId } from "screens/comfy/libs/utils";
 
 interface ListProps extends TableProps<Flow> {
   users: User[];
@@ -116,7 +117,7 @@ export const List = ({ users, refresh, ...props }: ListProps) => {
                 icon={<CheckOutlined />}
                 onClick={() => props.onSave({
                   ...addingRow,
-                  id: Math.floor((Math.random() * 1000000)).toString(),
+                  id: genRandomId(),
                   created: new Date().getTime(),
                 })}
               />

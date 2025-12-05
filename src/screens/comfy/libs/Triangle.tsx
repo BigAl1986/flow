@@ -1,19 +1,32 @@
 import styled from "@emotion/styled";
 import { BorderStyle, useMouseDown } from "./utils";
-import { useContext, useState, MouseEvent, useRef } from "react";
+import { useContext, useState, MouseEvent, useRef, useEffect } from "react";
 import ButtonsBar from "./components/ButtonsBar";
 import { ComfyNodeProps, NodeContextType } from "types";
 import { NodeContext } from "context/node-context";
 import PlayButton from "./components/PlayButton";
 import { trianglePorts } from ".";
+import { Input, InputRef } from "antd";
 
 export default function Triangle(props: ComfyNodeProps) {
+  const [showLabel, setShowLabel] = useState(props.nodeInfo?.label || '分叉节点');
+  const [editing, setEditing] = useState(false);
+  const inputRef = useRef<InputRef>(null);
   const [showButton, setShowButton] = useState(false);
   const boxRef = useRef<HTMLDivElement | null>(null);
   const { left, top } = useMouseDown(boxRef);
-  const { onMouseDown, onDragStart, canvasOffsetTop } = useContext(
+  const { onMouseDown, onDragStart, onRename, canvasOffsetTop } = useContext(
     NodeContext
   ) as NodeContextType;
+
+  useEffect(() => {
+    if (editing) inputRef.current?.focus({ cursor: 'all' });
+  }, [editing]);
+
+  const handleChange = () => {
+    setEditing(false);
+    onRename(props.nodeInfo?.id || '', showLabel);
+  };
 
   const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -61,8 +74,18 @@ export default function Triangle(props: ComfyNodeProps) {
           <TriangleMain
             className="node-name acea-row row-center"
             onMouseDown={(e) => handleMouseDown(e)}
+            onClick={() => setEditing(true)}
           >
-            <span>分叉节点</span>
+            {
+              editing ?
+              <Input
+                ref={inputRef}
+                value={showLabel}
+                onBlur={handleChange}
+                onPressEnter={handleChange}
+                onChange={e => setShowLabel(e.target.value)}
+              /> : <span>{showLabel}</span>
+            }
           </TriangleMain>
           <RightPort>
             <PlayButton
@@ -124,4 +147,11 @@ export const TriangleMain = styled.div`
   flex: 1;
   border: ${BorderStyle};
   cursor: move;
+
+  &:hover {
+    span {
+      transform: scale(1.1);
+      transition: transform .5s ease-in-out;
+    }
+  }
 `;

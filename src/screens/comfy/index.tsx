@@ -40,17 +40,19 @@ export default function Comfy() {
   >([]);
 
   const flowId = useLocation().pathname.split("/").at(-1) || "";
+  const flowLines = useRef<SvgLineList[]>([]);
+  const flowNodes = useRef<FlowNodeList[]>([]);
 
   useEffect(() => {
     const lineListStorage = localStorage.getItem("lineList");
-    const flowLines = JSON.parse(lineListStorage || '[]') as SvgLineList[];
-    const currentFlowLines = flowLines.find(lines => String(lines.flowId) === flowId);
+    flowLines.current = JSON.parse(lineListStorage || '[]') as SvgLineList[];
+    const currentFlowLines = flowLines.current.find(flow => String(flow.flowId) === flowId);
     setLineList(currentFlowLines?.list || []);
 
     const nodeListStorage = localStorage.getItem("nodeList");
-    const flowNodes = JSON.parse(nodeListStorage || '[]') as FlowNodeList[];
-    const currentNodeLines = flowNodes.find(lines => String(lines.flowId) === flowId);
-    setNodeList(currentNodeLines?.list || [
+    flowNodes.current = JSON.parse(nodeListStorage || '[]') as FlowNodeList[];
+    const currentFlowNodes = flowNodes.current.find(flow => String(flow.flowId) === flowId);
+    setNodeList(currentFlowNodes?.list || [
       {
         id: "start",
         type: "start",
@@ -98,6 +100,32 @@ export default function Comfy() {
       })
     );
   };
+  const onRename = (id: string, label: string) => {
+    console.log('onRename===', id, label);
+    const newNodeList = nodeList.map(node => {
+      if (node.id === id) {
+        return {
+          ...node,
+          label,
+        }
+      } else {
+        return node;
+      }
+    });
+    setNodeList(newNodeList);
+    const newFlowNodes = flowNodes.current.map(flow => {
+      if (String(flow.flowId) === flowId) {
+        return {
+          ...flow,
+          list: newNodeList,
+        }
+      } else {
+        return flow;
+      }
+    });
+    flowNodes.current = newFlowNodes;
+    localStorage.setItem('nodeList', JSON.stringify(newFlowNodes));
+  }
   const onRemove = (id: string) => {
     setNodeList(nodeList.filter((node) => node.id !== id));
     setLineList(
@@ -265,6 +293,7 @@ export default function Comfy() {
     <NodeContext.Provider
       value={{
         nodeList,
+        onRename,
         onRemove,
         onAdd,
         onMouseDown,

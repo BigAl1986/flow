@@ -30,6 +30,7 @@ export default function MainCanvas() {
       setCanvasOffsetLeft(left);
       setCanvasOffsetTop(top);
     }
+    // eslint-disable-next-line
   }, []);
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
