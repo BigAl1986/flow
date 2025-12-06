@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { GithubOutlined } from '@ant-design/icons';
 import { Button, Dropdown, MenuProps } from "antd";
 import { Row } from "components/lib";
 import { useAuth } from "context/auth-context";
@@ -63,6 +64,7 @@ const PageHeader = () => {
         <UserPopover />
       </HeaderLeft>
       <HeaderRight>
+        <GithubLink href="https://github.com/BigAl1986/flow" target="blank"><GithubOutlined /></GithubLink>
         <Dropdown menu={{ items: menus }}>
           <Button type="link">HI, {user?.name}</Button>
         </Dropdown>
@@ -91,7 +93,14 @@ const MiddleAlignButton = styled(Button)`
   align-items: center;
 `;
 
-const HeaderRight = styled.div``;
+const HeaderRight = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const GithubLink = styled.a`
+  font-size: 3rem;
+`;
 
 const Main = styled.main`
   display: flex;

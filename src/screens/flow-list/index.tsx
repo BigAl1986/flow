@@ -23,7 +23,7 @@ export const FlowList = () => {
     name: '',
     personId: 1,
     organization: '',
-    created: -1,
+    created: new Date().getTime(),
   }
 
   const handleParamChange = (param: any) => {
@@ -209,6 +209,7 @@ export const FlowList = () => {
         users={users || []}
         dataSource={ adding ? [ addingRow, ...flowList] : flowList || []}
         onDelete={handleDelete}
+        onCancel={() => setAdding(false)}
         onSave={handleSave}
       />
     </MainContainer>

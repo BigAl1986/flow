@@ -1,5 +1,5 @@
 import { Button, Input, Modal, Table, TableProps } from "antd";
-import { CheckOutlined } from '@ant-design/icons';
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { UserSelect } from "components/user-select";
 import dayjs from "dayjs";
 import { useState } from "react";
@@ -11,10 +11,20 @@ interface ListProps extends TableProps<Flow> {
   users: User[];
   onDelete: (id: string) => void;
   onSave: (flow: Flow) => void;
+  onCancel: () => void;
   refresh?: () => void;
 }
 
 export const List = ({ users, refresh, ...props }: ListProps) => {
+  const [addingRow, setAddingRow] = useState<Flow>({
+    id: 'new',
+    name: '',
+    personId: 1,
+    organization: '',
+    created: new Date().getTime(),
+  });
+  const saveDisabled = addingRow.name.trim() === '';
+
   const confirmDeleteProject = (flow: Flow) => {
     Modal.confirm({
       title: "确定删除该流程吗？",
@@ -25,14 +35,16 @@ export const List = ({ users, refresh, ...props }: ListProps) => {
       },
     });
   };
-
-  const [addingRow, setAddingRow] = useState<Flow>({
-    id: 'new',
-    name: '',
-    personId: 1,
-    organization: '',
-    created: -1,
-  });
+  const handleCancel = () => {
+    props.onCancel();
+    setAddingRow({
+      id: 'new',
+      name: '',
+      personId: 1,
+      organization: '',
+      created: new Date().getTime(),
+    });
+  }
 
   return (
     <Table
@@ -112,15 +124,24 @@ export const List = ({ users, refresh, ...props }: ListProps) => {
           render(value, record) {
             return (
               record.id === 'new' ?
-              <Button
-                type="link"
-                icon={<CheckOutlined />}
-                onClick={() => props.onSave({
-                  ...addingRow,
-                  id: genRandomId(),
-                  created: new Date().getTime(),
-                })}
-              />
+              <>
+                <Button
+                  type="link"
+                  disabled={saveDisabled}
+                  icon={<CheckOutlined />}
+                  onClick={() => props.onSave({
+                    ...addingRow,
+                    id: genRandomId(),
+                    created: new Date().getTime(),
+                  })}
+                />
+                <Button
+                  danger
+                  type="link"
+                  icon={<CloseOutlined />}
+                  onClick={handleCancel}
+                />
+              </>
               :
               <Button
                 danger
